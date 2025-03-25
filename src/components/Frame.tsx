@@ -12,9 +12,8 @@ import {
   CardContent,
 } from "~/components/ui/card";
 
-import { config } from "~/components/providers/WagmiProvider";
 import { truncateAddress } from "~/lib/truncateAddress";
-import { parseEther } from "viem";
+import { parseEther } from "viem/utils";
 import { base, optimism } from "wagmi/chains";
 import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
@@ -59,7 +58,7 @@ function MemeCard({ memeUrl, onSave, onMint, isSaved }: {
 }
 
 export default function Frame() {
-  const { data: session } = useSession();
+  useSession();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
   const [currentMeme, setCurrentMeme] = useState("");
@@ -77,7 +76,7 @@ export default function Frame() {
         chainId: `eip155:${optimism.id}`,
         method: "eth_sendTransaction",
         params: {
-          to: "0x...", // Your wallet address
+          to: "0x0000000000000000000000000000000000000000", // TODO: Replace with your wallet address
           value: parseEther(SAVE_PRICE).toString(), // Convert to wei
         },
       });
@@ -94,8 +93,8 @@ export default function Frame() {
         chainId: `eip155:${base.id}`,
         method: "eth_sendTransaction",
         params: {
-          to: "0x...", // TODO: Replace with your NFT contract address
-          data: "0x...", // TODO: Replace with mint transaction data
+          to: "0x0000000000000000000000000000000000000000", // TODO: Replace with your NFT contract address
+          data: "0x00", // TODO: Replace with mint transaction data
         },
       });
     } catch (error) {

@@ -1,4 +1,4 @@
-export const PROJECT_ID = 'farcaster-frames-template';
+export const PROJECT_ID = "farcaster-frames-template";
 export const PROJECT_TITLE = "Vibe Memes ∞";
 export const PROJECT_DESCRIPTION = "Fresh memes with highest vibes. Pay to save your faves!";
 export const MEMES = [
