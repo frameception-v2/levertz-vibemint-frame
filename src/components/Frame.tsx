@@ -19,94 +19,14 @@ import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
-import { PROJECT_TITLE, MEMES, SAVE_PRICE } from "~/lib/constants";
+import SnakeGame from "~/components/SnakeGame";
+import { PROJECT_TITLE } from "~/lib/constants";
 
-function MemeCard({ memeUrl, onSave, onMint, isSaved }: { 
-  memeUrl: string;
-  onSave: () => void;
-  onMint: () => void;
-  isSaved: boolean;
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>🔥 Fresh Vibe Check 🔥</CardTitle>
-        <CardDescription>
-          {isSaved ? "Your saved vibe" : "New vibe unlocked!"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <img 
-          src={memeUrl} 
-          alt="High vibe meme"
-          className="w-full h-48 object-cover rounded-lg"
-        />
-        <div className="flex gap-2">
-          <Button 
-            onClick={onSave}
-            disabled={isSaved}
-          >
-            {isSaved ? "Vibe Saved" : `Save Vibe (${SAVE_PRICE} ETH)`}
-          </Button>
-          <Button variant="secondary" onClick={onMint}>
-            Mint as NFT
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function Frame() {
   useSession();
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
-  const [currentMeme, setCurrentMeme] = useState("");
-  const [savedMeme, setSavedMeme] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
-
-  const getRandomMeme = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * MEMES.length);
-    return MEMES[randomIndex];
-  }, []);
-
-  const handleSave = useCallback(async () => {
-    try {
-      await sdk.actions.sendTransaction({
-        chainId: `eip155:${optimism.id}`,
-        method: "eth_sendTransaction",
-        params: {
-          to: "0x0000000000000000000000000000000000000000", // TODO: Replace with your wallet address
-          value: parseEther(SAVE_PRICE).toString(), // Convert to wei
-        },
-      });
-      setSavedMeme(currentMeme);
-      setIsSaved(true);
-    } catch (error) {
-      console.error("Save failed:", error);
-    }
-  }, [currentMeme, getRandomMeme]);
-
-  const handleMint = useCallback(async () => {
-    try {
-      await sdk.actions.sendTransaction({
-        chainId: `eip155:${base.id}`,
-        method: "eth_sendTransaction",
-        params: {
-          to: "0x0000000000000000000000000000000000000000", // TODO: Replace with your NFT contract address
-          data: "0x00", // TODO: Replace with mint transaction data
-        },
-      });
-    } catch (error) {
-      console.error("Mint failed:", error);
-    }
-  }, [currentMeme]);
-
-  useEffect(() => {
-    if (context?.client.added) {
-      setCurrentMeme(savedMeme || getRandomMeme());
-    }
-  }, [context, savedMeme, getRandomMeme]);
 
   const [added, setAdded] = useState(false);
 
@@ -199,12 +119,7 @@ export default function Frame() {
       }}
     >
       <div className="w-[300px] mx-auto py-2 px-2">
-        <MemeCard 
-          memeUrl={currentMeme}
-          onSave={handleSave}
-          onMint={handleMint}
-          isSaved={isSaved}
-        />
+        <SnakeGame />
       </div>
     </div>
   );
