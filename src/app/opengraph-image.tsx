@@ -15,9 +15,7 @@ async function loadFont(fontPath: string): Promise<Buffer> {
     // Fallback to loading from absolute path
     try {
       const absolutePath = join(
-        __dirname,
-        "..",
-        "..",
+        process.cwd(),
         "public",
         "fonts",
         fontPath.split("/").pop()!

@@ -2,8 +2,6 @@
 
 import { useEffect, useCallback, useState } from "react";
 import sdk, {
-  AddFrame,
-  SignIn as SignInCore,
   type Context,
 } from "@farcaster/frame-sdk";
 import {
@@ -16,6 +14,7 @@ import {
 
 import { config } from "~/components/providers/WagmiProvider";
 import { truncateAddress } from "~/lib/truncateAddress";
+import { parseEther } from "viem";
 import { base, optimism } from "wagmi/chains";
 import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
@@ -79,7 +78,7 @@ export default function Frame() {
         method: "eth_sendTransaction",
         params: {
           to: "0x...", // Your wallet address
-          value: SAVE_PRICE.toString(), // Convert to wei
+          value: parseEther(SAVE_PRICE).toString(), // Convert to wei
         },
       });
       setSavedMeme(currentMeme);
@@ -93,10 +92,10 @@ export default function Frame() {
     try {
       await sdk.actions.sendTransaction({
         chainId: `eip155:${base.id}`,
-        method: "eth_sendTransaction", 
+        method: "eth_sendTransaction",
         params: {
-          to: "0x...", // Your NFT contract address
-          data: "0x...", // Mint transaction data
+          to: "0x...", // TODO: Replace with your NFT contract address
+          data: "0x...", // TODO: Replace with mint transaction data
         },
       });
     } catch (error) {
@@ -118,15 +117,11 @@ export default function Frame() {
     try {
       await sdk.actions.addFrame();
     } catch (error) {
-      if (error instanceof AddFrame.RejectedByUser) {
-        setAddFrameResult(`Not added: ${error.message}`);
+      if (error instanceof Error) {
+        setAddFrameResult(`Error: ${error.message}`);
+      } else {
+        setAddFrameResult(`Unknown error occurred`);
       }
-
-      if (error instanceof AddFrame.InvalidDomainManifest) {
-        setAddFrameResult(`Not added: ${error.message}`);
-      }
-
-      setAddFrameResult(`Error: ${error}`);
     }
   }, []);
 
